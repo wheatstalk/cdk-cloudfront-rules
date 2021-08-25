@@ -1,10 +1,27 @@
 // noinspection ES6ConvertVarToLetConst
 
+if (typeof module !== 'undefined') {
+  // Test environment.
+  module.exports = {
+    handler,
+    replace,
+    rewriteRule,
+  };
+}
+
+/**
+ * Logging function that calls the callback when it wants to output logs.
+ * @param {() => string} cb
+ */
+function log(cb) {
+  // console.log(cb());
+}
+
 function handler(event) {
   /** @type CFRequest */
   var request = event.request;
 
-  console.log('event = ' + JSON.stringify(event));
+  log(() => 'event = ' + JSON.stringify(event));
 
   var variables = {
     'REMOTE_ADDR': event.viewer.ip,
@@ -15,18 +32,21 @@ function handler(event) {
     variables['HTTP_HOST'] = request.headers.host.value;
   }
 
+  var context = {};
+
   var finalResult = RULES.reduce((previousValue, rule, index) => {
-    console.log('Reducing ' + JSON.stringify(previousValue));
+    log(() => 'Reducing ' + JSON.stringify(previousValue));
     return rule({
       request: isRequest(previousValue) ? previousValue : undefined,
       response: isRequest(previousValue) ? undefined : previousValue,
       event: event,
       index: index,
       variables: variables,
+      context: context,
     });
   }, request);
 
-  console.log('Final result = ' + JSON.stringify(finalResult));
+  log(() => 'Final result = ' + JSON.stringify(finalResult));
 
   return finalResult;
 }
@@ -64,119 +84,92 @@ function replace(options) {
 
   return substitution
     // Pattern capture group replacements $1, $2, ..., $N
-    .replace(/\$(\d+)/g, function (_, c1) { return found[parseInt(c1)] || ''; })
+    .replace(CAPTURE_GROUP_REGEX, function (_, c1) { return found[parseInt(c1)] || ''; })
     // Variable replacements like %{HTTP_HOST}
-    .replace(/%{(.*?)}/g, function (_, c1) { return variables[c1] || '' });
+    .replace(VARIABLE_REGEX, function (_, c1) { return variables[c1] || '' });
 }
 
+// Compile these once
+var CAPTURE_GROUP_REGEX = /\$(\d+)/g;
+var VARIABLE_REGEX = /%{(.*?)}/g;
+
 /**
- * @typedef RuleCallbackOptions
+ * @typedef RuleOptions
  * @type object
  * @property {CFRequest|undefined} request
  * @property {CFResponse|undefined} response
  * @property {object} event
- * @property {number} index
+ * @property {object} context
  * @property {Record<string, string>|undefined} variables
  */
 
 /**
- * @typedef RuleCallback
+ * @typedef Rule
  * @type function
- * @param {RuleCallbackOptions} options
+ * @param {RuleOptions} options
  * @returns {CFRequest|CFResponse}
  */
 
-/** @type {RuleCallback[]} */
+/** @type {Rule[]} */
 var RULES = []; // ::RULES-REPLACEMENT
 
 /**
- * @typedef RewriteRuleOptions
+ * @typedef RewriteRuleConfig
  * @type object
  * @property {RegExp} pattern
  * @property {string} substitution
+ * @property {number} redirectStatusCode
+ * @property {boolean|undefined} last
  */
 /**
- * @function
- * @param {RewriteRuleOptions} rewriteRuleOptions
- * @returns {RuleCallback}
+ * @param {RewriteRuleConfig} config
+ * @returns {Rule}
  */
-function rewriteRule(rewriteRuleOptions) {
-  var pattern = rewriteRuleOptions.pattern;
-  var substitution = rewriteRuleOptions.substitution;
-
-  /** @type {RuleCallback} */
-  function ruleCallback(options) {
+function rewriteRule(config) {
+  /**
+   * @param {RuleOptions} options
+   * @returns {CFRequest|CFResponse}
+   */
+  function apply(options) {
     if (options.response)
       return options.response;
 
     var request = options.request;
-    if (!pattern.test(request.uri))
+    if (options.context.rewriteRuleLast || !config.pattern.test(request.uri))
       return request;
 
-    request.uri = replace({
-      pattern: pattern,
-      substitution: substitution,
-      input: request.uri,
-      variables: options.variables,
-    });
-
-    return request;
-  }
-
-  return ruleCallback;
-}
-
-/**
- * @typedef RedirectRuleOptions
- * @type object
- * @property {RegExp} pattern
- * @property {string} location
- * @property {number} statusCode
- * @property {string} statusDescription
- */
-/**
- * @function
- * @param {RedirectRuleOptions} redirectRuleOptions
- * @return {RuleCallback}
- */
-function redirectRule(redirectRuleOptions) {
-  var pattern = redirectRuleOptions.pattern;
-  var location = redirectRuleOptions.location;
-  var statusCode = redirectRuleOptions.statusCode;
-  var statusDescription = redirectRuleOptions.statusDescription;
-
-  /** @type {RuleCallback} */
-  function ruleCallback(options) {
-    if (options.response)
-      return options.response;
-
-    var request = options.request;
-    if (!pattern.test(request.uri))
-      return request;
+    if (config.last) {
+      options.context.rewriteRuleLast = true;
+    }
 
     var finalLocation = replace({
-      pattern: pattern,
-      substitution: location,
+      pattern: config.pattern,
+      substitution: config.substitution,
       input: request.uri,
       variables: options.variables,
     });
 
-    // noinspection UnnecessaryLocalVariableJS
-    /** @type CFResponse */
-    var response = {
-      statusCode: statusCode,
-      statusDescription: statusDescription,
-      headers: {
-        'location': {
-          value: finalLocation,
+    if (config.redirectStatusCode) {
+      // noinspection UnnecessaryLocalVariableJS
+      /** @type CFResponse */
+      var response = {
+        statusCode: config.redirectStatusCode,
+        statusDescription: 'Found',
+        headers: {
+          'location': {
+            value: finalLocation,
+          },
         },
-      },
-    };
+      };
 
-    return response;
+      return response;
+    } else {
+      request.uri = finalLocation;
+      return request;
+    }
   }
 
-  return ruleCallback;
+  return apply;
 }
 
 // <editor-fold desc="CloudFront JSDocs">

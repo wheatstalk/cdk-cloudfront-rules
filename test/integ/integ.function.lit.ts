@@ -1,7 +1,7 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as cloudfront_origins from '@aws-cdk/aws-cloudfront-origins';
 import * as cdk from '@aws-cdk/core';
-import { Rule, RulesFunction } from '../../src';
+import { RedirectType, Rule, RulesFunction } from '../../src';
 
 export class IntegFunctionLit extends cdk.Stack {
   constructor(_scope: cdk.Construct, props: cdk.StackProps = {}) {
@@ -13,36 +13,38 @@ export class IntegFunctionLit extends cdk.Stack {
     // Create a RulesFunction
     const rulesFunction = new RulesFunction(scope, 'RulesFunction', {
       rules: [
-        // Rewrite routes matching /rewrite-* to /* using a capture group.
-        // (think Apache/.htaccess RewriteRule)
+        // Rewrite URIs matching /rewrite-* to /* using a capture group. (Think
+        // Apache/.htaccess RewriteRule)
         Rule.rewriteRule({
           pattern: '^/rewrite-(.*)',
-          patternFlags: 'i',
-          substitution: '/$1',
-        }),
-        // Redirect with a capture path to www.example.com/*
-        Rule.redirectRule({
-          pattern: '^/redirect-(.*)',
-          patternFlags: 'i',
-          location: 'https://www.example.com/$1',
+          location: '/$1',
         }),
 
-        // Note: Rules are applied in the order they're specified until a
-        // response is produced (such as a redirect). So, in this example,
-        // were you to visit a URI like /rewrite-redirect-foobar, the first
-        // rule will rewrite you to /redirect-foobar and then the second rule
-        // will match, redirecting you to https://www.example.com/foobar
+        // Redirect /redirect-* to https://www.example.com/*
+        Rule.rewriteRule({
+          pattern: '^/redirect-(.*)',
+          patternFlags: 'i', // case insensitive
+          location: 'https://www.example.com/$1',
+          redirectType: RedirectType.TEMPORARY,
+        }),
+
+        // Note: Rules are applied in the order they're provided. Rewrite rules
+        // are applied while there has not yet been a redirect or matching
+        // rewrite with the 'last' option.
+        //
+        // In this example, were you to visit a URI like
+        // /rewrite-redirect-foobar, the first rule will rewrite you to
+        // /redirect-foobar and then the second rule will match,
+        // redirecting you to https://www.example.com/foobar
       ],
     });
 
     // Create your CloudFront distribution.
     const distribution = new cloudfront.Distribution(scope, 'Distribution', {
-      priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
       defaultBehavior: {
         origin: new cloudfront_origins.HttpOrigin('www.example.com', {
           protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
         }),
-        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 
         // Associate the RulesFunction with VIEWER_REQUEST events.
         functionAssociations: [{

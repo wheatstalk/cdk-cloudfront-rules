@@ -5,7 +5,7 @@ test('rendering rules', () => {
   const rules = [
     Rule.rewriteRule({
       pattern: '/index.html',
-      substitution: '/rewritten',
+      location: '/rewritten',
     }),
   ];
 
@@ -18,6 +18,8 @@ test('rendering rules', () => {
     'rewriteRule({\n' +
     '  pattern: new RegExp("/index.html", undefined),\n' +
     '  substitution: "/rewritten",\n' +
+    '  redirectStatusCode: undefined,\n' +
+    '  last: undefined,\n' +
     '}),\n' +
     ']',
   );
@@ -33,7 +35,7 @@ BAZ
   const rules = [
     Rule.rewriteRule({
       pattern: '/index.html',
-      substitution: '/rewritten',
+      location: '/rewritten',
     }),
   ];
 

@@ -12,10 +12,6 @@ export abstract class Rule {
   static rewriteRule(options: RewriteRuleOptions): IRule {
     return new RewriteRule(options);
   }
-
-  static redirectRule(options: RedirectRuleOptions): IRule {
-    return new RedirectRule(options);
-  }
 }
 
 /**
@@ -24,20 +20,42 @@ export abstract class Rule {
 export interface RewriteRuleOptions {
   /** Nodejs-compatible regex pattern to match URIs */
   readonly pattern: string;
+
   /** RegExp flags */
   readonly patternFlags?: string;
+
   /** Rewrite to this URI */
-  readonly substitution: string;
+  readonly location: string;
+
+  /**
+   * Redirect to `location` with this HTTP status code.
+   * @default - the rewrite does not redirect
+   */
+  readonly redirectType?: RedirectType;
+
+  /** Stop rewriting if this rule matches and don't apply any more rewrites. */
+  readonly last?: boolean;
+}
+
+/** Redirection status codes */
+export enum RedirectType {
+  /** A temporary redirect */
+  TEMPORARY = 302,
+
+  /** A permanent redirect */
+  PERMANENT = 308
 }
 
 class RewriteRule implements IRule {
   private readonly patternExpression: string;
+  private readonly redirectStatusCode?: number;
 
   constructor(private readonly options: RewriteRuleOptions) {
     this.patternExpression = renderRegExpExpression(options.pattern, options.patternFlags);
+    this.redirectStatusCode = mapRedirectTypeToStatusCode(options.redirectType);
 
-    if (!this.options.substitution.startsWith('/')) {
-      throw new Error('`location` must begin with a forward slash');
+    if (!options.redirectType && !options.location.startsWith('/')) {
+      throw new Error('`location` must begin with a forward slash when rewriting');
     }
   }
 
@@ -46,77 +64,30 @@ class RewriteRule implements IRule {
       rendered: `
 rewriteRule({
   pattern: ${this.patternExpression},
-  substitution: ${JSON.stringify(this.options.substitution)},
+  substitution: ${renderSimpleExpression(this.options.location)},
+  redirectStatusCode: ${renderSimpleExpression(this.redirectStatusCode)},
+  last: ${renderSimpleExpression(this.options.last)},
 }),
 `.trim(),
     };
   }
 }
 
-/** Options for redirect rules */
-export interface RedirectRuleOptions {
-  /** Nodejs-compatible regex pattern to match URIs */
-  readonly pattern: string;
+function mapRedirectTypeToStatusCode(redirectType?: RedirectType): number|undefined {
+  if (redirectType === undefined) {return undefined;}
 
-  /** RegExp flags */
-  readonly patternFlags?: string;
-
-  /** Redirect to this location */
-  readonly location: string;
-
-  /**
-   * Use this HTTP status code
-   * @default RedirectStatusCode.PERMANENT
-   */
-  readonly statusCode?: RedirectStatusCode;
-
-  /**
-   * Use this redirection text
-   * @default - appropriate text for `statusCode`
-   */
-  readonly statusDescription?: string;
+  switch (redirectType) {
+    case RedirectType.PERMANENT:
+      return 308;
+    case RedirectType.TEMPORARY:
+      return 302;
+    default:
+      throw new Error(`Unknown status code ${redirectType}`);
+  }
 }
 
-/** Redirection status codes */
-export enum RedirectStatusCode {
-  /** A temporary redirect */
-  TEMPORARY = 302,
-  /** A permanent redirect */
-  PERMANENT = 308
-}
-
-class RedirectRule implements IRule {
-  private readonly patternExpression: string;
-  private readonly statusCode: RedirectStatusCode;
-  private readonly statusDescription: string;
-  constructor(private readonly options: RedirectRuleOptions) {
-    // Defaults
-    this.statusCode = options.statusCode ?? RedirectStatusCode.PERMANENT;
-    this.statusDescription = options.statusDescription ?? 'Found';
-
-    this.patternExpression = renderRegExpExpression(this.options.pattern, this.options.patternFlags);
-
-    if (/^\s*$/.test(options.location)) {
-      throw new Error('Invalid redirect location');
-    }
-
-    if (/^\s*$/.test(this.statusDescription)) {
-      throw new Error('Invalid status description');
-    }
-  }
-
-  _render(): RuleConfig {
-    return {
-      rendered: `
-redirectRule({
-  pattern: ${this.patternExpression},
-  location: ${JSON.stringify(this.options.location)},
-  statusCode: ${JSON.stringify(this.statusCode)},
-  statusDescription: ${JSON.stringify(this.statusDescription)},
-}),
-`.trim(),
-    };
-  }
+function renderSimpleExpression(value: unknown): string {
+  return value !== undefined ? JSON.stringify(value) : 'undefined';
 }
 
 function renderRegExpExpression(pattern: string, patternFlags?: string) {

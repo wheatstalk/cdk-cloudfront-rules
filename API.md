@@ -47,60 +47,6 @@ The CloudFront function.
 
 ## Structs <a name="Structs"></a>
 
-### RedirectRuleOptions <a name="@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions"></a>
-
-Options for redirect rules.
-
-#### Initializer <a name="[object Object].Initializer"></a>
-
-```typescript
-import { RedirectRuleOptions } from '@wheatstalk/cdk-cloudfront-rules'
-
-const redirectRuleOptions: RedirectRuleOptions = { ... }
-```
-
-##### `location`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions.property.location"></a>
-
-- *Type:* `string`
-
-Redirect to this location.
-
----
-
-##### `pattern`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions.property.pattern"></a>
-
-- *Type:* `string`
-
-Nodejs-compatible regex pattern to match URIs.
-
----
-
-##### `patternFlags`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions.property.patternFlags"></a>
-
-- *Type:* `string`
-
-RegExp flags.
-
----
-
-##### `statusCode`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions.property.statusCode"></a>
-
-- *Type:* [`@wheatstalk/cdk-cloudfront-rules.RedirectStatusCode`](#@wheatstalk/cdk-cloudfront-rules.RedirectStatusCode)
-- *Default:* RedirectStatusCode.PERMANENT
-
-Use this HTTP status code.
-
----
-
-##### `statusDescription`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions.property.statusDescription"></a>
-
-- *Type:* `string`
-- *Default:* appropriate text for `statusCode`
-
-Use this redirection text.
-
----
-
 ### RewriteRuleOptions <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions"></a>
 
 Options for rewrite rules.
@@ -113,6 +59,14 @@ import { RewriteRuleOptions } from '@wheatstalk/cdk-cloudfront-rules'
 const rewriteRuleOptions: RewriteRuleOptions = { ... }
 ```
 
+##### `location`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.location"></a>
+
+- *Type:* `string`
+
+Rewrite to this URI.
+
+---
+
 ##### `pattern`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.pattern"></a>
 
 - *Type:* `string`
@@ -121,11 +75,11 @@ Nodejs-compatible regex pattern to match URIs.
 
 ---
 
-##### `substitution`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.substitution"></a>
+##### `last`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.last"></a>
 
-- *Type:* `string`
+- *Type:* `boolean`
 
-Rewrite to this URI.
+Stop rewriting if this rule matches and don't apply any more rewrites.
 
 ---
 
@@ -134,6 +88,15 @@ Rewrite to this URI.
 - *Type:* `string`
 
 RegExp flags.
+
+---
+
+##### `redirectType`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.redirectType"></a>
+
+- *Type:* [`@wheatstalk/cdk-cloudfront-rules.RedirectType`](#@wheatstalk/cdk-cloudfront-rules.RedirectType)
+- *Default:* the rewrite does not redirect
+
+Redirect to `location` with this HTTP status code.
 
 ---
 
@@ -173,20 +136,6 @@ new Rule()
 
 #### Static Functions <a name="Static Functions"></a>
 
-##### `redirectRule` <a name="@wheatstalk/cdk-cloudfront-rules.Rule.redirectRule"></a>
-
-```typescript
-import { Rule } from '@wheatstalk/cdk-cloudfront-rules'
-
-Rule.redirectRule(options: RedirectRuleOptions)
-```
-
-###### `options`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.Rule.parameter.options"></a>
-
-- *Type:* [`@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions`](#@wheatstalk/cdk-cloudfront-rules.RedirectRuleOptions)
-
----
-
 ##### `rewriteRule` <a name="@wheatstalk/cdk-cloudfront-rules.Rule.rewriteRule"></a>
 
 ```typescript
@@ -213,18 +162,18 @@ Rule.rewriteRule(options: RewriteRuleOptions)
 
 ## Enums <a name="Enums"></a>
 
-### RedirectStatusCode <a name="RedirectStatusCode"></a>
+### RedirectType <a name="RedirectType"></a>
 
 Redirection status codes.
 
-#### `TEMPORARY` <a name="@wheatstalk/cdk-cloudfront-rules.RedirectStatusCode.TEMPORARY"></a>
+#### `TEMPORARY` <a name="@wheatstalk/cdk-cloudfront-rules.RedirectType.TEMPORARY"></a>
 
 A temporary redirect.
 
 ---
 
 
-#### `PERMANENT` <a name="@wheatstalk/cdk-cloudfront-rules.RedirectStatusCode.PERMANENT"></a>
+#### `PERMANENT` <a name="@wheatstalk/cdk-cloudfront-rules.RedirectType.PERMANENT"></a>
 
 A permanent redirect.
 
