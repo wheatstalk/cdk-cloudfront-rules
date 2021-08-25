@@ -11,7 +11,7 @@ export class IntegRulesLit extends cdk.Stack {
 
     // ::SNIP
     // Create a CloudFrontRules construct
-    const cloudFrontRules = new CloudFrontRules(scope, 'RulesFunction', {
+    const cloudFrontRules = new CloudFrontRules(scope, 'CloudFrontRules', {
       rules: [
         // Rewrite URIs matching /rewrite-* to /* using a capture group. (Think
         // Apache/.htaccess RewriteRule)

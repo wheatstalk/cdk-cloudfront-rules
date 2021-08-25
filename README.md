@@ -8,7 +8,7 @@ Lambda @ Edge) that simplifies CloudFront-based URL rewriting and redirects.
 <!-- <macro exec="lit-snip ./test/integ/integ.rules.lit.ts"> -->
 ```ts
 // Create a CloudFrontRules construct
-const cloudFrontRules = new CloudFrontRules(scope, 'RulesFunction', {
+const cloudFrontRules = new CloudFrontRules(scope, 'CloudFrontRules', {
   rules: [
     // Rewrite URIs matching /rewrite-* to /* using a capture group. (Think
     // Apache/.htaccess RewriteRule)
