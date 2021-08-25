@@ -5,10 +5,10 @@ Lambda @ Edge) that simplifies CloudFront-based URL rewriting and redirects.
 
 ## Example
 
-<!-- <macro exec="lit-snip ./test/integ/integ.function.lit.ts"> -->
+<!-- <macro exec="lit-snip ./test/integ/integ.rules.lit.ts"> -->
 ```ts
-// Create a RulesFunction
-const rulesFunction = new RulesFunction(scope, 'RulesFunction', {
+// Create a CloudFrontRules construct
+const cloudFrontRules = new CloudFrontRules(scope, 'RulesFunction', {
   rules: [
     // Rewrite URIs matching /rewrite-* to /* using a capture group. (Think
     // Apache/.htaccess RewriteRule)
@@ -43,10 +43,10 @@ const distribution = new cloudfront.Distribution(scope, 'Distribution', {
       protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
     }),
 
-    // Associate the RulesFunction with VIEWER_REQUEST events.
+    // Associate the produced function with VIEWER_REQUEST events.
     functionAssociations: [{
-      function: rulesFunction.function,
       eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+      function: cloudFrontRules.function,
     }],
   },
 });

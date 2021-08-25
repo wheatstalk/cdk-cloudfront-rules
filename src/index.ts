@@ -1,2 +1,2 @@
-export * from './rules-function';
+export * from './cloudfront-rules';
 export * from './rules';

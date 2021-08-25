@@ -1,3 +1,4 @@
+/** Interface for a rule */
 export interface IRule {
   /** @internal */
   _render(): RuleConfig;
@@ -21,7 +22,10 @@ export interface RewriteRuleOptions {
   /** Nodejs-compatible regex pattern to match URIs */
   readonly pattern: string;
 
-  /** RegExp flags */
+  /**
+   * RegExp flags
+   * @default -
+   * */
   readonly patternFlags?: string;
 
   /** Rewrite to this URI */
@@ -40,10 +44,10 @@ export interface RewriteRuleOptions {
 /** Redirection status codes */
 export enum RedirectType {
   /** A temporary redirect */
-  TEMPORARY = 302,
+  TEMPORARY = 'temporary',
 
   /** A permanent redirect */
-  PERMANENT = 308
+  PERMANENT = 'permanent',
 }
 
 class RewriteRule implements IRule {

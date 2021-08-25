@@ -27,7 +27,7 @@
     "readme-macros": "npx projen readme-macros",
     "release": "npx projen release",
     "projen": "npx projen",
-    "integ:function": "cdk --app \"ts-node -P tsconfig.jest.json test/integ/integ.function.lit.ts\""
+    "integ:rules": "cdk --app \"ts-node -P tsconfig.jest.json test/integ/integ.rules.lit.ts\""
   },
   "author": {
     "name": "Josh Kellendonk",

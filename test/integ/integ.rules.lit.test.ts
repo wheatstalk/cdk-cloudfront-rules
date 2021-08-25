@@ -1,9 +1,9 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { IntegFunctionLit } from './integ.function.lit';
+import { IntegRulesLit } from './integ.rules.lit';
 
 test('snapshot', () => {
   const stack = new cdk.Stack();
-  new IntegFunctionLit(stack);
+  new IntegRulesLit(stack);
   expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
 });

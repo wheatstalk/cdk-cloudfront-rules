@@ -1,17 +1,17 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as cloudfront_origins from '@aws-cdk/aws-cloudfront-origins';
 import * as cdk from '@aws-cdk/core';
-import { RedirectType, Rule, RulesFunction } from '../../src';
+import { RedirectType, Rule, CloudFrontRules } from '../../src';
 
-export class IntegFunctionLit extends cdk.Stack {
+export class IntegRulesLit extends cdk.Stack {
   constructor(_scope: cdk.Construct, props: cdk.StackProps = {}) {
-    super(_scope, 'IntegFunction', props);
+    super(_scope, 'IntegRulesLit', props);
 
     const scope = this;
 
     // ::SNIP
-    // Create a RulesFunction
-    const rulesFunction = new RulesFunction(scope, 'RulesFunction', {
+    // Create a CloudFrontRules construct
+    const cloudFrontRules = new CloudFrontRules(scope, 'RulesFunction', {
       rules: [
         // Rewrite URIs matching /rewrite-* to /* using a capture group. (Think
         // Apache/.htaccess RewriteRule)
@@ -46,10 +46,10 @@ export class IntegFunctionLit extends cdk.Stack {
           protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
         }),
 
-        // Associate the RulesFunction with VIEWER_REQUEST events.
+        // Associate the produced function with VIEWER_REQUEST events.
         functionAssociations: [{
-          function: rulesFunction.function,
           eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          function: cloudFrontRules.function,
         }],
       },
     });
@@ -69,7 +69,7 @@ export class IntegFunctionLit extends cdk.Stack {
 
 if (!module.parent) {
   const app = new cdk.App();
-  new IntegFunctionLit(app, {
+  new IntegRulesLit(app, {
     env: {
       account: process.env.CDK_DEFAULT_ACCOUNT,
       region: process.env.CDK_DEFAULT_REGION,

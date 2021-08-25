@@ -2,33 +2,33 @@
 
 ## Constructs <a name="Constructs"></a>
 
-### RulesFunction <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunction"></a>
+### CloudFrontRules <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules"></a>
 
 Produces a CloudFront function with rules support.
 
-#### Initializer <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunction.Initializer"></a>
+#### Initializer <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.Initializer"></a>
 
 ```typescript
-import { RulesFunction } from '@wheatstalk/cdk-cloudfront-rules'
+import { CloudFrontRules } from '@wheatstalk/cdk-cloudfront-rules'
 
-new RulesFunction(scope: Construct, id: string, props?: RulesFunctionProps)
+new CloudFrontRules(scope: Construct, id: string, props?: CloudFrontRulesProps)
 ```
 
-##### `scope`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunction.parameter.scope"></a>
+##### `scope`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.parameter.scope"></a>
 
 - *Type:* [`@aws-cdk/core.Construct`](#@aws-cdk/core.Construct)
 
 ---
 
-##### `id`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunction.parameter.id"></a>
+##### `id`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.parameter.id"></a>
 
 - *Type:* `string`
 
 ---
 
-##### `props`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunction.parameter.props"></a>
+##### `props`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.parameter.props"></a>
 
-- *Type:* [`@wheatstalk/cdk-cloudfront-rules.RulesFunctionProps`](#@wheatstalk/cdk-cloudfront-rules.RulesFunctionProps)
+- *Type:* [`@wheatstalk/cdk-cloudfront-rules.CloudFrontRulesProps`](#@wheatstalk/cdk-cloudfront-rules.CloudFrontRulesProps)
 
 ---
 
@@ -36,7 +36,7 @@ new RulesFunction(scope: Construct, id: string, props?: RulesFunctionProps)
 
 #### Properties <a name="Properties"></a>
 
-##### `function`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunction.property.function"></a>
+##### `function`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.property.function"></a>
 
 - *Type:* [`@aws-cdk/aws-cloudfront.Function`](#@aws-cdk/aws-cloudfront.Function)
 
@@ -46,6 +46,27 @@ The CloudFront function.
 
 
 ## Structs <a name="Structs"></a>
+
+### CloudFrontRulesProps <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRulesProps"></a>
+
+Props for `RuleFunction`.
+
+#### Initializer <a name="[object Object].Initializer"></a>
+
+```typescript
+import { CloudFrontRulesProps } from '@wheatstalk/cdk-cloudfront-rules'
+
+const cloudFrontRulesProps: CloudFrontRulesProps = { ... }
+```
+
+##### `rules`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRulesProps.property.rules"></a>
+
+- *Type:* [`@wheatstalk/cdk-cloudfront-rules.IRule`](#@wheatstalk/cdk-cloudfront-rules.IRule)[]
+- *Default:* no rules - requests pass through untouched
+
+Rules to apply.
+
+---
 
 ### RewriteRuleOptions <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions"></a>
 
@@ -86,6 +107,7 @@ Stop rewriting if this rule matches and don't apply any more rewrites.
 ##### `patternFlags`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.patternFlags"></a>
 
 - *Type:* `string`
+- *Default:* 
 
 RegExp flags.
 
@@ -97,27 +119,6 @@ RegExp flags.
 - *Default:* the rewrite does not redirect
 
 Redirect to `location` with this HTTP status code.
-
----
-
-### RulesFunctionProps <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunctionProps"></a>
-
-Props for `RuleFunction`.
-
-#### Initializer <a name="[object Object].Initializer"></a>
-
-```typescript
-import { RulesFunctionProps } from '@wheatstalk/cdk-cloudfront-rules'
-
-const rulesFunctionProps: RulesFunctionProps = { ... }
-```
-
-##### `rules`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RulesFunctionProps.property.rules"></a>
-
-- *Type:* [`@wheatstalk/cdk-cloudfront-rules.IRule`](#@wheatstalk/cdk-cloudfront-rules.IRule)[]
-- *Default:* the request passes through untouched
-
-Rules to apply.
 
 ---
 
@@ -157,6 +158,8 @@ Rule.rewriteRule(options: RewriteRuleOptions)
 ### IRule <a name="@wheatstalk/cdk-cloudfront-rules.IRule"></a>
 
 - *Implemented By:* [`@wheatstalk/cdk-cloudfront-rules.IRule`](#@wheatstalk/cdk-cloudfront-rules.IRule)
+
+Interface for a rule.
 
 
 

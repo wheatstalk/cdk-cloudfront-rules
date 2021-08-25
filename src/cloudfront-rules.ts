@@ -5,10 +5,10 @@ import * as cdk from '@aws-cdk/core';
 import { IRule } from './rules';
 
 /** Props for `RuleFunction` */
-export interface RulesFunctionProps {
+export interface CloudFrontRulesProps {
   /**
    * Rules to apply.
-   * @default - the request passes through untouched
+   * @default - no rules - requests pass through untouched
    */
   readonly rules?: IRule[];
 }
@@ -16,18 +16,18 @@ export interface RulesFunctionProps {
 /**
  * Produces a CloudFront function with rules support.
  */
-export class RulesFunction extends cdk.Construct {
+export class CloudFrontRules extends cdk.Construct {
   /** The CloudFront function */
   public readonly function: cloudfront.Function;
 
-  constructor(scope: cdk.Construct, id: string, props: RulesFunctionProps = {}) {
+  constructor(scope: cdk.Construct, id: string, props: CloudFrontRulesProps = {}) {
     super(scope, id);
 
     // By default, no rules.
     const rules = props.rules ?? [];
 
-    const functionsDir = path.join(__dirname, '..', 'functions');
-    const codePath = path.join(functionsDir, 'cloudfront-function.js');
+    // Render the function as inline code.
+    const codePath = path.join(__dirname, '..', 'functions', 'cloudfront-function.js');
     const codeTemplate = fs.readFileSync(codePath).toString('utf-8');
     const inlineCode = renderInlineCode(codeTemplate, rules);
 

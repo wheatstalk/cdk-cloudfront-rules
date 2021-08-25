@@ -75,7 +75,7 @@ const project = new pj.AwsCdkConstructLibrary({
   // release: undefined,                /* Add release management to this project. */
 });
 
-project.package.setScript('integ:function', 'cdk --app "ts-node -P tsconfig.jest.json test/integ/integ.function.lit.ts"');
+project.package.setScript('integ:rules', 'cdk --app "ts-node -P tsconfig.jest.json test/integ/integ.rules.lit.ts"');
 
 const macros = project.addTask('readme-macros');
 macros.exec('shx mv README.md README.md.bak');
