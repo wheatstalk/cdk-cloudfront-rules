@@ -6,7 +6,7 @@
 
 Produces a CloudFront function with rules support.
 
-#### Initializer <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.Initializer"></a>
+#### Initializers <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.Initializer"></a>
 
 ```typescript
 import { CloudFrontRules } from '@wheatstalk/cdk-cloudfront-rules'
@@ -126,7 +126,7 @@ Redirect to `location` with this HTTP status code.
 
 ### Rule <a name="@wheatstalk/cdk-cloudfront-rules.Rule"></a>
 
-#### Initializer <a name="@wheatstalk/cdk-cloudfront-rules.Rule.Initializer"></a>
+#### Initializers <a name="@wheatstalk/cdk-cloudfront-rules.Rule.Initializer"></a>
 
 ```typescript
 import { Rule } from '@wheatstalk/cdk-cloudfront-rules'
