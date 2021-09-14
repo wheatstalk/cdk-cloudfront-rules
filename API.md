@@ -38,6 +38,10 @@ new CloudFrontRules(scope: Construct, id: string, props?: CloudFrontRulesProps)
 
 ##### `function`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRules.property.function"></a>
 
+```typescript
+public readonly function: Function;
+```
+
 - *Type:* [`@aws-cdk/aws-cloudfront.Function`](#@aws-cdk/aws-cloudfront.Function)
 
 The CloudFront function.
@@ -61,6 +65,10 @@ const cloudFrontRulesProps: CloudFrontRulesProps = { ... }
 
 ##### `rules`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.CloudFrontRulesProps.property.rules"></a>
 
+```typescript
+public readonly rules: IRule[];
+```
+
 - *Type:* [`@wheatstalk/cdk-cloudfront-rules.IRule`](#@wheatstalk/cdk-cloudfront-rules.IRule)[]
 - *Default:* no rules - requests pass through untouched
 
@@ -82,6 +90,10 @@ const rewriteRuleOptions: RewriteRuleOptions = { ... }
 
 ##### `location`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.location"></a>
 
+```typescript
+public readonly location: string;
+```
+
 - *Type:* `string`
 
 Rewrite to this URI.
@@ -89,6 +101,10 @@ Rewrite to this URI.
 ---
 
 ##### `pattern`<sup>Required</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.pattern"></a>
+
+```typescript
+public readonly pattern: string;
+```
 
 - *Type:* `string`
 
@@ -98,6 +114,10 @@ Nodejs-compatible regex pattern to match URIs.
 
 ##### `last`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.last"></a>
 
+```typescript
+public readonly last: boolean;
+```
+
 - *Type:* `boolean`
 
 Stop rewriting if this rule matches and don't apply any more rewrites.
@@ -105,6 +125,10 @@ Stop rewriting if this rule matches and don't apply any more rewrites.
 ---
 
 ##### `patternFlags`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.patternFlags"></a>
+
+```typescript
+public readonly patternFlags: string;
+```
 
 - *Type:* `string`
 - *Default:* 
@@ -114,6 +138,10 @@ RegExp flags.
 ---
 
 ##### `redirectType`<sup>Optional</sup> <a name="@wheatstalk/cdk-cloudfront-rules.RewriteRuleOptions.property.redirectType"></a>
+
+```typescript
+public readonly redirectType: RedirectType;
+```
 
 - *Type:* [`@wheatstalk/cdk-cloudfront-rules.RedirectType`](#@wheatstalk/cdk-cloudfront-rules.RedirectType)
 - *Default:* the rewrite does not redirect
